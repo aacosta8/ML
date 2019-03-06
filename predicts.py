@@ -8,33 +8,34 @@ from sklearn.model_selection import train_test_split
 from sklearn import tree
 from sklearn import linear_model
 
-# save the classifier
+# leer nombre del archivo csv (parámetro)
+wine_file = sys.argv[1]
+
+#  cargar los clasificadores
 with open('classifier.pkl', 'rb') as fid:
     tree_loaded = pickle.load(fid)
 
 with open('classifier_LR.pkl', 'rb') as fid:
     linear_model_loaded = pickle.load(fid)
 
-wine_file = sys.argv[1]
+# leer csv
+wines = pd.read_csv(wine_file,sep=",")
+X = wines.values
 
-wines = pd.read_csv(wine_file,sep=";")
-X = wines.drop(['quality'], axis=1).values
+# Se realizan las predicciones de la clase (binaria)
+predictions_tree = tree_loaded.predict(X[:,[10,1,7,5,2]])
 
-predictions = tree_loaded.predict(X[:,[10,1,7,5,2]])
+# Se realiza la predicción de la calidad
 predictions_linear_model = linear_model_loaded.predict(X)
 
-with open(wine_file,'r') as csvinput:
-    with open('output.csv', 'w') as csvoutput:
-        writer = csv.writer(csvoutput, lineterminator='\n')
-        reader = csv.reader(csvinput)
+# Se unen las dos predicciones en un DataFrame
+df = pd.DataFrame({'class':predictions_tree,'quality':predictions_linear_model})
 
-        all = []
-        row = next(reader)
-        row.append('Result')
-        all.append(row)
+# Se cambian las respuestas binarias por texto
+df.loc[df["class"] == 1,"class"] = 'BUENO'
+df.loc[df["class"] == 0,"class"] = 'MALO'
 
-        for idx, row in enumerate(reader):
-            row.append(predictions[idx])
-            all.append(row)
+# Se guarda el archivo separado por ;
+df.to_csv('output.csv',';')
 
-        writer.writerows(all)
+print("finished, the output is at 'output.csv' ")
