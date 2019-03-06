@@ -28,6 +28,9 @@ predictions_tree = tree_loaded.predict(X[:,[10,1,7,5,2]])
 # Se realiza la predicción de la calidad
 predictions_linear_model = linear_model_loaded.predict(X)
 
+# se redondean los resultados obtenidos
+predictions_linear_model = predictions_linear_model.round()
+
 # Se unen las dos predicciones en un DataFrame
 df = pd.DataFrame({'class':predictions_tree,'quality':predictions_linear_model})
 
@@ -36,6 +39,6 @@ df.loc[df["class"] == 1,"class"] = 'BUENO'
 df.loc[df["class"] == 0,"class"] = 'MALO'
 
 # Se guarda el archivo separado por ;
-df.to_csv('output.csv',';')
+df.to_csv('output.csv',',',index=False )
 
 print("finished, the output is at 'output.csv' ")
