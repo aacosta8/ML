@@ -12,7 +12,7 @@ from sklearn import linear_model
 wine_file = sys.argv[1]
 
 #  cargar los clasificadores
-with open('classifier.pkl', 'rb') as fid:
+with open('classifierDTC_5.pkl', 'rb') as fid:
     tree_loaded = pickle.load(fid)
 
 with open('classifier_LR.pkl', 'rb') as fid:
